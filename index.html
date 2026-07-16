@@ -64,6 +64,20 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
 .intro-card h2 { font-size: 1.6rem; font-weight: 900; margin-bottom: 1rem; color: white; font-family: 'Playfair Display', serif; }
 .text-gradient-gold { color: var(--accent); font-style: italic; font-family: 'Playfair Display', serif; }
 .intro-card p { color: rgba(255,255,255,0.8); font-size: 0.9rem; line-height: 1.7; }
+/* Promo Box */
+.promo-box { border: 2px solid var(--accent); border-radius: var(--radius); padding: 2.5rem 2rem; margin-bottom: 2rem; text-align: center; }
+.promo-countdown-section { margin-bottom: 1.5rem; }
+.promo-ends-label { color: var(--accent); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; }
+.countdown { display: flex; justify-content: center; gap: 0.8rem; margin-bottom: 1rem; }
+.countdown-item { display: flex; flex-direction: column; align-items: center; }
+.countdown-num { font-size: 2rem; font-weight: 900; color: white; background: rgba(255,255,255,0.08); border: 1px solid var(--border); border-radius: 8px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; }
+.countdown-secs .countdown-num { color: var(--accent); }
+.countdown-label { font-size: 0.6rem; color: rgba(255,255,255,0.5); margin-top: 0.4rem; letter-spacing: 0.1em; }
+.promo-subtext { font-size: 0.8rem; color: rgba(255,255,255,0.6); }
+.promo-reserve-label { font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.8); letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+.promo-offer { font-size: 1.1rem; font-weight: 900; color: var(--accent); margin-bottom: 0.5rem; }
+.promo-worth { font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-bottom: 0.3rem; }
+.promo-limited { font-size: 0.85rem; color: rgba(255,255,255,0.6); }
 .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
 .stat-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; text-align: center; }
 .stat-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
@@ -472,6 +486,24 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
     <p style="margin-top:1rem;">From Stonehenge to the Scottish Highlands, from the Lake District to the Giant's Causeway, from the streets of London to the pubs of Dublin — every stop is reachable in under 3 hours. No 6-hour bus marathons. No 4 AM wake-up calls. Just a smarter route designed so you arrive fresh at every destination, with energy left to actually enjoy it.</p>
   </div>
 
+  <!-- Promo Section -->
+  <div class="promo-box">
+    <div class="promo-countdown-section">
+      <p class="promo-ends-label">● PROMO ENDS ON JULY 25, 2026</p>
+      <div class="countdown" id="promo-countdown">
+        <div class="countdown-item"><span class="countdown-num" id="cd-days">00</span><span class="countdown-label">DAYS</span></div>
+        <div class="countdown-item"><span class="countdown-num" id="cd-hours">00</span><span class="countdown-label">HOURS</span></div>
+        <div class="countdown-item"><span class="countdown-num" id="cd-mins">00</span><span class="countdown-label">MINS</span></div>
+        <div class="countdown-item countdown-secs"><span class="countdown-num" id="cd-secs">00</span><span class="countdown-label">SECS</span></div>
+      </div>
+      <p class="promo-subtext">Lock in your slots before the countdown hits zero to guarantee current pricing & perks!</p>
+    </div>
+    <p class="promo-reserve-label">RESERVE YOUR SLOT AND GET A</p>
+    <p class="promo-offer">FREE 1 Night Pre-Extension in London & FREE 1 Night Post-Extension in Dublin</p>
+    <p class="promo-worth">Worth ₱60,000/head!</p>
+    <p class="promo-limited"><em>Limited slots only — secure yours now!</em></p>
+  </div>
+
   <!-- Stats -->
   <div class="stats-row">
     <div class="stat-card">
@@ -480,9 +512,9 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
       <div class="stat-sub">Easy monthly installments</div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon">🌍</div>
-      <div class="stat-title">3 COUNTRIES</div>
-      <div class="stat-sub">England, Scotland & Ireland</div>
+      <div class="stat-icon">🏨</div>
+      <div class="stat-title">FREE LONDON & DUBLIN</div>
+      <div class="stat-sub">Pre & post extension included</div>
     </div>
     <div class="stat-card">
       <div class="stat-icon">🎯</div>
@@ -2035,11 +2067,44 @@ function makeDraggable(element, handle) {
 }
 
 // ==================== INIT ====================
+// ==================== PROMO COUNTDOWN ====================
+function startPromoCountdown() {
+  const promoEnd = new Date('2026-07-25T23:59:59+08:00').getTime();
+  function update() {
+    const now = new Date().getTime();
+    const diff = promoEnd - now;
+    if (diff <= 0) {
+      document.getElementById('cd-days').textContent = '00';
+      document.getElementById('cd-hours').textContent = '00';
+      document.getElementById('cd-mins').textContent = '00';
+      document.getElementById('cd-secs').textContent = '00';
+      const promoBox = document.querySelector('.promo-box');
+      if (promoBox) {
+        promoBox.style.opacity = '0.5';
+        const label = promoBox.querySelector('.promo-ends-label');
+        if (label) label.textContent = '\u25cf PROMO HAS ENDED';
+      }
+      return;
+    }
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+    document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
+    document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+    document.getElementById('cd-mins').textContent = String(mins).padStart(2, '0');
+    document.getElementById('cd-secs').textContent = String(secs).padStart(2, '0');
+  }
+  update();
+  setInterval(update, 1000);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initItinerary();
   document.getElementById('travelDate').addEventListener('change', recalculate);
   document.getElementById('travelersCount').addEventListener('change', recalculate);
   checkBookingUrl();
+  startPromoCountdown();
 });
 </script>
 </body>
