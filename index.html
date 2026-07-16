@@ -239,6 +239,14 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
 .checkbox-row { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 1rem; text-align: left; }
 .checkbox-row input[type="checkbox"] { margin-top: 0.2rem; width: 16px; height: 16px; }
 .checkbox-row label { font-size: 0.72rem; color: rgba(255,255,255,0.7); line-height: 1.5; }
+/* Freebies Section */
+.freebies-section { margin-bottom: 1.5rem; }
+.freebies-label { font-size: 0.85rem; font-weight: 800; color: #dc2626; margin-bottom: 0.75rem; letter-spacing: 0.05em; }
+.freebie-item { background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 1px solid #6ee7b7; border-radius: 0.75rem; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
+.freebie-check { color: #059669; font-size: 1.2rem; font-weight: 900; flex-shrink: 0; }
+.freebie-item strong { color: #065f46; font-size: 0.85rem; }
+.freebie-worth { color: #6b7a94; font-size: 0.8rem; }
+.freebies-section.hidden { display: none; }
 .submit-btn { width: 100%; padding: 1rem; background: var(--accent); color: var(--primary-dark); border: none; border-radius: 0.6rem; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: all 0.2s var(--ease-out); }
 .submit-btn:hover { background: var(--accent-light); transform: translateY(-1px); }
 .submit-btn:active { transform: scale(0.97); }
@@ -782,13 +790,19 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
       <!-- Installment Preview -->
       <div class="installment-preview" id="installment-preview"></div>
 
-      <!-- Pricing Summary -->
-      <div class="pricing-summary" id="pricing-summary" style="display:none;"></div>
-
       <!-- Notes -->
       <div class="form-group" style="margin-bottom:1.5rem;">
         <label>Special Requests</label>
         <textarea id="notes" rows="3" placeholder="Any special requests or additional traveler names..."></textarea>
+      </div>
+
+      <!-- Freebies -->
+      <div class="freebies-section" id="freebies-section">
+        <p class="freebies-label">🎁 FREEBIES</p>
+        <div class="freebie-item">
+          <span class="freebie-check">✓</span>
+          <span><strong>Free 1 night pre-extension in London & 1 night post-extension in Dublin</strong> <span class="freebie-worth">worth Php 60,000 per head</span></span>
+        </div>
       </div>
 
       <!-- Submit -->
@@ -1038,7 +1052,7 @@ function selectPayment(type) {
 function recalculate() {
   const travelDateId = document.getElementById('travelDate').value;
   const dates = TRAVEL_DATES[travelDateId];
-  if (!dates) { document.getElementById('installment-preview').style.display = 'none'; document.getElementById('pricing-summary').style.display = 'none'; return; }
+  if (!dates) { document.getElementById('installment-preview').style.display = 'none'; return; }
   const standardRate = selectedPackage === 'full' ? 180000 : 160000;
   const count = parseInt(document.getElementById('travelersCount').value);
   const primaryDob = document.getElementById('dob').value;
@@ -1075,32 +1089,7 @@ function recalculate() {
   const grandTotal = classified.reduce((sum, p) => sum + p.finalRate, 0);
   const totalDiscount = classified.reduce((sum, p) => sum + p.discount, 0);
 
-  // Render pricing summary
-  const summaryEl = document.getElementById('pricing-summary');
-  if (primaryDob || count > 1) {
-    summaryEl.style.display = 'block';
-    let html = `<h4>\ud83d\udcb0 Pricing Summary</h4>`;
-    classified.forEach(p => {
-      const label = p.name;
-      const catBadge = p.category !== 'adult' ? `<span class="badge">${getCategoryLabel(p.category)}</span>` : '';
-      const originalShow = p.discount > 0 ? `<span class="original">${formatPHP(standardRate)}</span>` : '';
-      const discountShow = p.discount > 0 ? `<span class="discount-text">(-${formatPHP(p.discount)})</span>` : '';
-      html += `<div class="pricing-row"><span class="label">${label} ${catBadge}</span><span class="value">${originalShow}${formatPHP(p.finalRate)}${discountShow}</span></div>`;
-    });
-    html += `<div class="pricing-row total"><span class="label">Total Cost (${count} traveler${count > 1 ? 's' : ''})</span><span class="value">${formatPHP(grandTotal)}</span></div>`;
-    if (totalDiscount > 0) {
-      html += `<div class="savings-banner">\ud83c\udf89 You save ${formatPHP(totalDiscount)} with discounts!${classified.some(p => p.category === 'senior') ? ' (Senior)' : classified.some(p => p.category === 'child') ? ' (Child)' : ''}</div>`;
-    }
-    html += `<div class="discount-note">Infants (0\u201323 months): Flat \u20b150,000. Children (2\u20135): \u20b15,000 off. Seniors (60+): \u20b15,000 off. Discounts applied automatically to the Full Package.</div>`;
-    summaryEl.innerHTML = html;
-  } else {
-    summaryEl.style.display = 'block';
-    let html = `<h4>\ud83d\udcb0 Pricing Summary</h4>`;
-    html += `<div class="pricing-row"><span class="label">${selectedPackage === 'full' ? 'Full Package' : 'Land Arrangement Only'}</span><span class="value">${formatPHP(standardRate)}</span></div>`;
-    html += `<div class="pricing-row total"><span class="label">Total Cost (${count} traveler${count > 1 ? 's' : ''})</span><span class="value">${formatPHP(standardRate * count)}</span></div>`;
-    html += `<div class="discount-note">Infants (0\u201323 months): Flat \u20b150,000. Children (2\u20135): \u20b15,000 off. Seniors (60+): \u20b15,000 off. Discounts applied automatically to the Full Package.</div>`;
-    summaryEl.innerHTML = html;
-  }
+  // Pricing summary removed from form UI; classified data still used in handleSubmit
   renderInstallmentPreview(grandTotal || standardRate * count, travelDateId);
 }
 
@@ -1308,7 +1297,12 @@ function handleSubmit(e) {
   const grandTotal = classified.reduce((sum, p) => sum + p.finalRate, 0);
   const totalAmount = formatPHP(grandTotal);
 
-  lastBookingData = { allTravelers, classified, grandTotal, count, packageType: selectedPackage, paymentScheme: selectedPayment, travelDateId: data.travelDate, travelDateLabel, standardRate, travelConsultant: data.travelConsultant, notes: data.notes || '' };
+  // Check if promo freebie applies (submitted on or before Jul 25, 2026)
+  const promoDeadline = new Date('2026-07-25T23:59:59+08:00').getTime();
+  const hasPromoFreebie = new Date().getTime() <= promoDeadline;
+  const freebieText = hasPromoFreebie ? 'FREE 1 night pre-extension in London & 1 night post-extension in Dublin (worth \u20b160,000/head)' : '';
+
+  lastBookingData = { allTravelers, classified, grandTotal, count, packageType: selectedPackage, paymentScheme: selectedPayment, travelDateId: data.travelDate, travelDateLabel, standardRate, travelConsultant: data.travelConsultant, notes: data.notes || '', freebie: freebieText };
 
   const btn = document.getElementById('submit-btn');
   btn.disabled = true; btn.textContent = 'Submitting...';
@@ -1333,7 +1327,8 @@ function handleSubmit(e) {
     total_amount: totalAmount,
     travel_consultant: data.travelConsultant,
     message: message,
-    review_approve_link: generateBookingLink()
+    review_approve_link: generateBookingLink(),
+    freebies: lastBookingData.freebie || 'None'
   };
 
   fetch('https://api.web3forms.com/submit', {
@@ -2105,6 +2100,14 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('travelersCount').addEventListener('change', recalculate);
   checkBookingUrl();
   startPromoCountdown();
+  // Show/hide freebies based on promo deadline
+  const promoDeadline = new Date('2026-07-25T23:59:59+08:00').getTime();
+  const freebiesEl = document.getElementById('freebies-section');
+  if (freebiesEl) {
+    if (new Date().getTime() > promoDeadline) {
+      freebiesEl.classList.add('hidden');
+    }
+  }
 });
 </script>
 </body>
