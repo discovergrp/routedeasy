@@ -254,6 +254,20 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
 .freebie-item strong { color: #065f46; font-size: 0.85rem; }
 .freebie-worth { color: #6b7a94; font-size: 0.8rem; }
 .freebies-section.hidden { display: none; }
+.discount-breakdown { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; padding: 1rem; margin: 1rem 0; }
+.discount-breakdown-title { font-size: 0.8rem; font-weight: 700; color: var(--accent); margin-bottom: 0.5rem; }
+.discount-row { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; font-size: 0.8rem; color: rgba(255,255,255,0.85); }
+.discount-row .badge { display: inline-block; background: #f59e0b; color: #1a1f3a; font-size: 0.6rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 0.25rem; margin-left: 0.4rem; text-transform: uppercase; }
+.discount-row .badge-infant { background: #a78bfa; color: white; }
+.discount-row .badge-child { background: #34d399; color: #064e3b; }
+.discount-row .badge-senior { background: #f59e0b; color: #1a1f3a; }
+.discount-row .discount-text { color: #34d399; font-size: 0.75rem; font-weight: 600; margin-left: 0.3rem; }
+.installment-divider { border-top: 1px solid rgba(255,255,255,0.1); margin: 0.75rem 0; }
+.installment-sub-header { font-size: 0.78rem; color: rgba(255,255,255,0.7); padding: 0.3rem 0; }
+.installment-sub-header .badge { display: inline-block; background: #f59e0b; color: #1a1f3a; font-size: 0.55rem; font-weight: 800; padding: 0.1rem 0.4rem; border-radius: 0.2rem; margin-left: 0.3rem; text-transform: uppercase; }
+.installment-sub-header .badge-infant { background: #a78bfa; color: white; }
+.installment-sub-header .badge-child { background: #34d399; color: #064e3b; }
+.installment-sub-header .badge-senior { background: #f59e0b; color: #1a1f3a; }
 .submit-btn { width: 100%; padding: 1rem; background: var(--accent); color: var(--primary-dark); border: none; border-radius: 0.6rem; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: all 0.2s var(--ease-out); }
 .submit-btn:hover { background: var(--accent-light); transform: translateY(-1px); }
 .submit-btn:active { transform: scale(0.97); }
@@ -1106,22 +1120,50 @@ function recalculate() {
   const totalDiscount = classified.reduce((sum, p) => sum + p.discount, 0);
 
   // Pricing summary removed from form UI; classified data still used in handleSubmit
-  renderInstallmentPreview(grandTotal || standardRate * count, travelDateId);
+  renderInstallmentPreview(grandTotal || standardRate * count, travelDateId, classified);
 }
 
-function renderInstallmentPreview(total, travelDateId) {
+function renderInstallmentPreview(total, travelDateId, classified) {
   const previewEl = document.getElementById('installment-preview');
+  const count = parseInt(document.getElementById('travelersCount').value || '1');
+
+  // Build per-traveler discount breakdown if classified data has discounts
+  function buildDiscountBreakdown(classifiedData) {
+    if (!classifiedData || classifiedData.length === 0) return '';
+    const hasDiscounts = classifiedData.some(p => p.category !== 'adult');
+    if (!hasDiscounts) return '';
+    let html = '<div class="discount-breakdown">';
+    html += '<p class="discount-breakdown-title">\ud83c\udff7\ufe0f Age-Based Pricing:</p>';
+    classifiedData.forEach(p => {
+      const badge = p.category !== 'adult' ? `<span class="badge badge-${p.category}">${getCategoryLabel(p.category)}</span>` : '';
+      const discountNote = p.category === 'infant' ? `<span class="discount-text">(Flat \u20b150,000)</span>` : p.discount > 0 ? `<span class="discount-text">(-${formatPHP(p.discount)} off)</span>` : '';
+      html += `<div class="discount-row"><span>${p.name || 'Traveler ' + (p.index + 1)} ${badge}</span><span>${formatPHP(p.finalRate)}/head ${discountNote}</span></div>`;
+    });
+    html += '</div>';
+    return html;
+  }
+
   if (selectedPayment === 'downpayment') {
     previewEl.style.display = 'block';
-    const count = parseInt(document.getElementById('travelersCount').value || '1');
-    const perHead = total / count;
-    const downPayment = 50000;
-    const balance = perHead - downPayment;
     let html = `<h4>\ud83d\udcb3 Down Payment Scheme</h4>`;
     html += `<div class="note">Secure your slot with \u20b150,000 down payment per head. The remaining balance will be due upon release of your visa result.</div>`;
-    html += `<div class="installment-row"><span class="date">Down Payment (per head)</span><span class="amount">${formatPHP(downPayment)}</span></div>`;
-    html += `<div class="installment-row"><span class="date">Balance (per head) — due upon visa approval</span><span class="amount">${formatPHP(balance)}</span></div>`;
-    html += `<div class="installment-row total"><span class="date">Total per head</span><span class="amount">${formatPHP(perHead)}</span></div>`;
+    html += buildDiscountBreakdown(classified);
+    if (classified && classified.length > 0) {
+      classified.forEach(p => {
+        const perHead = p.finalRate;
+        const downPayment = p.category === 'infant' ? perHead : 50000;
+        const balance = perHead - downPayment;
+        const badge = p.category !== 'adult' ? ` <span class="badge badge-${p.category}">${getCategoryLabel(p.category)}</span>` : '';
+        html += `<div class="installment-row"><span class="date">${p.name || 'Traveler ' + (p.index + 1)}${badge}</span><span class="amount">${formatPHP(perHead)}/head</span></div>`;
+      });
+    } else {
+      const perHead = total / count;
+      const downPayment = 50000;
+      const balance = perHead - downPayment;
+      html += `<div class="installment-row"><span class="date">Down Payment (per head)</span><span class="amount">${formatPHP(downPayment)}</span></div>`;
+      html += `<div class="installment-row"><span class="date">Balance (per head) \u2014 due upon visa approval</span><span class="amount">${formatPHP(balance)}</span></div>`;
+    }
+    html += `<div class="installment-row total"><span class="date">Grand Total</span><span class="amount">${formatPHP(total)}</span></div>`;
     previewEl.innerHTML = html;
     return;
   }
@@ -1135,17 +1177,40 @@ function renderInstallmentPreview(total, travelDateId) {
   let months = 0; let checkDate = new Date(startMonth);
   while (checkDate <= deadline) { months++; checkDate.setMonth(checkDate.getMonth() + 1); }
   if (months < 1) months = 1;
-  const perHead = total / parseInt(document.getElementById('travelersCount').value || '1');
-  const monthlyAmount = Math.ceil(perHead / months);
+
+  // Show per-traveler breakdown if there are discounts
+  const hasDiscounts = classified && classified.some(p => p.category !== 'adult');
   let html = `<h4>\ud83d\udcc5 Your Installment Plan (${months} months)</h4>`;
   html += `<div class="note">Fully paid 3 months before departure. Monthly payments divided equally:</div>`;
-  let payDate = new Date(startMonth);
-  for (let i = 0; i < months; i++) {
-    const dateStr = payDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    html += `<div class="installment-row"><span class="date">${dateStr}</span><span class="amount">${formatPHP(monthlyAmount)} per head</span></div>`;
-    payDate.setMonth(payDate.getMonth() + 1);
+
+  if (hasDiscounts) {
+    html += buildDiscountBreakdown(classified);
+    html += '<div class="installment-divider"></div>';
+    classified.forEach(p => {
+      const monthlyAmt = Math.ceil(p.finalRate / months);
+      const badge = p.category !== 'adult' ? ` <span class="badge badge-${p.category}">${getCategoryLabel(p.category)}</span>` : '';
+      html += `<div class="installment-sub-header">${p.name || 'Traveler ' + (p.index + 1)}${badge} — ${formatPHP(monthlyAmt)}/month</div>`;
+    });
+    html += '<div class="installment-divider"></div>';
+    let payDate = new Date(startMonth);
+    const totalMonthly = classified.reduce((sum, p) => sum + Math.ceil(p.finalRate / months), 0);
+    for (let i = 0; i < months; i++) {
+      const dateStr = payDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      html += `<div class="installment-row"><span class="date">${dateStr}</span><span class="amount">${formatPHP(totalMonthly)} total</span></div>`;
+      payDate.setMonth(payDate.getMonth() + 1);
+    }
+    html += `<div class="installment-row total"><span class="date">Total (${months} months)</span><span class="amount">${formatPHP(total)}</span></div>`;
+  } else {
+    const perHead = total / count;
+    const monthlyAmount = Math.ceil(perHead / months);
+    let payDate = new Date(startMonth);
+    for (let i = 0; i < months; i++) {
+      const dateStr = payDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      html += `<div class="installment-row"><span class="date">${dateStr}</span><span class="amount">${formatPHP(monthlyAmount)} per head</span></div>`;
+      payDate.setMonth(payDate.getMonth() + 1);
+    }
+    html += `<div class="installment-row total"><span class="date">Total (${months} months)</span><span class="amount">${formatPHP(perHead)} per head</span></div>`;
   }
-  html += `<div class="installment-row total"><span class="date">Total (${months} months)</span><span class="amount">${formatPHP(perHead)} per head</span></div>`;
   previewEl.innerHTML = html;
 }
 
