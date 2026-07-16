@@ -216,6 +216,10 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
 .pricing-summary .pricing-row.total .label { color: #fff; font-size: 1.1rem; text-transform: none; }
 .pricing-summary .pricing-row.total .value { font-size: 1.3rem; }
 .pricing-summary .discount-note { font-size: 0.78rem; font-style: italic; color: rgba(255,255,255,0.5); margin-top: 1rem; line-height: 1.4; }
+.pricing-row .label .badge { display: inline-block; font-size: 0.6rem; background: rgba(251,191,36,0.2); color: var(--accent); padding: 0.1rem 0.4rem; border-radius: 0.25rem; margin-left: 0.3rem; font-weight: 700; }
+.pricing-row .original { text-decoration: line-through; color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-right: 0.5rem; }
+.pricing-row .discount-text { color: #4ade80; font-size: 0.75rem; margin-left: 0.5rem; }
+.savings-banner { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 0.5rem; padding: 0.6rem 1rem; margin-top: 0.75rem; font-size: 0.8rem; color: #4ade80; font-weight: 600; text-align: center; }
 .submit-section { margin-top: 1.5rem; text-align: center; }
 .checkbox-row { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 1rem; text-align: left; }
 .checkbox-row input[type="checkbox"] { margin-top: 0.2rem; width: 16px; height: 16px; }
@@ -691,7 +695,7 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
         <div class="form-group"><label>Gender *</label><select id="gender" required><option value="">Select Gender</option><option>Male</option><option>Female</option></select></div>
       </div>
       <div class="form-grid">
-        <div class="form-group"><label>Date of Birth *</label><input type="date" id="dob" required></div>
+        <div class="form-group"><label>Date of Birth *</label><input type="date" id="dob" required onchange="recalculate()"></div>
         <div class="form-group"><label>Contact Number *</label><input type="tel" id="contactNo" placeholder="e.g. +63 917 123 4567" required></div>
         <div class="form-group"><label>Email Address *</label><input type="email" id="email" placeholder="e.g. juan.delacruz@gmail.com" required></div>
       </div>
@@ -929,6 +933,45 @@ document.querySelectorAll('.city-tab').forEach(tab => {
 // ==================== PRICING LOGIC ====================
 function formatPHP(amount) { return '\u20b1' + amount.toLocaleString('en-US'); }
 
+function getAgeAtDate(dob, refDate) {
+  const birth = new Date(dob);
+  const ref = new Date(refDate);
+  let years = ref.getFullYear() - birth.getFullYear();
+  let months = ref.getMonth() - birth.getMonth();
+  if (ref.getDate() < birth.getDate()) months--;
+  if (months < 0) { years--; months += 12; }
+  return { years, totalMonths: years * 12 + months };
+}
+
+function classifyAge(dob, startDate, endDate) {
+  if (!dob || !startDate || !endDate) return 'adult';
+  const { totalMonths } = getAgeAtDate(dob, endDate);
+  const { years: yearsAtStart } = getAgeAtDate(dob, startDate);
+  const { years: yearsAtEnd } = getAgeAtDate(dob, endDate);
+  if (totalMonths >= 0 && totalMonths <= 23) return 'infant';
+  if (yearsAtEnd >= 2 && yearsAtEnd < 6) return 'child';
+  if (yearsAtStart >= 60) return 'senior';
+  return 'adult';
+}
+
+function getCategoryRate(category, standardRate) {
+  switch(category) {
+    case 'infant': return { rate: 50000, discount: standardRate - 50000 };
+    case 'child': return { rate: standardRate - 5000, discount: 5000 };
+    case 'senior': return { rate: standardRate - 5000, discount: 5000 };
+    default: return { rate: standardRate, discount: 0 };
+  }
+}
+
+function getCategoryLabel(cat) {
+  switch(cat) {
+    case 'infant': return 'Infant';
+    case 'child': return 'Child';
+    case 'senior': return 'Senior';
+    default: return 'Adult';
+  }
+}
+
 // ==================== FORM LOGIC ====================
 function updateTravelers() {
   const count = parseInt(document.getElementById('travelersCount').value);
@@ -939,7 +982,7 @@ function updateTravelers() {
     container.style.display = 'block';
     let html = '';
     for (let i = 2; i <= Math.min(count, 6); i++) {
-      html += `<div class="traveler-block"><div class="traveler-label">Traveler ${i}</div><div class="form-grid"><div class="form-group"><label>First Name *</label><input type="text" class="traveler-field" data-idx="${i}" data-field="firstName" placeholder="FIRST NAME" required></div><div class="form-group"><label>Middle Name</label><input type="text" class="traveler-field" data-idx="${i}" data-field="middleName" placeholder="MIDDLE NAME"></div><div class="form-group"><label>Last Name *</label><input type="text" class="traveler-field" data-idx="${i}" data-field="lastName" placeholder="LAST NAME" required></div></div><div class="form-grid-2"><div class="form-group"><label>Suffix</label><select class="traveler-field" data-idx="${i}" data-field="suffix"><option>None</option><option>Jr.</option><option>Sr.</option><option>II</option><option>III</option></select></div><div class="form-group"><label>Gender *</label><select class="traveler-field" data-idx="${i}" data-field="gender" required><option value="">Select Gender</option><option>Male</option><option>Female</option></select></div></div><div class="form-grid"><div class="form-group"><label>Date of Birth *</label><input type="date" class="traveler-field" data-idx="${i}" data-field="dob" required></div><div class="form-group"><label>Contact Number *</label><input type="tel" class="traveler-field" data-idx="${i}" data-field="contact" placeholder="+63 9XX XXX XXXX" required></div><div class="form-group"><label>Email Address *</label><input type="email" class="traveler-field" data-idx="${i}" data-field="email" placeholder="email@example.com" required></div></div></div>`;
+      html += `<div class="traveler-block"><div class="traveler-label">Traveler ${i}</div><div class="form-grid"><div class="form-group"><label>First Name *</label><input type="text" class="traveler-field" data-idx="${i}" data-field="firstName" placeholder="FIRST NAME" required></div><div class="form-group"><label>Middle Name</label><input type="text" class="traveler-field" data-idx="${i}" data-field="middleName" placeholder="MIDDLE NAME"></div><div class="form-group"><label>Last Name *</label><input type="text" class="traveler-field" data-idx="${i}" data-field="lastName" placeholder="LAST NAME" required></div></div><div class="form-grid-2"><div class="form-group"><label>Suffix</label><select class="traveler-field" data-idx="${i}" data-field="suffix"><option>None</option><option>Jr.</option><option>Sr.</option><option>II</option><option>III</option></select></div><div class="form-group"><label>Gender *</label><select class="traveler-field" data-idx="${i}" data-field="gender" required><option value="">Select Gender</option><option>Male</option><option>Female</option></select></div></div><div class="form-grid"><div class="form-group"><label>Date of Birth *</label><input type="date" class="traveler-field" data-idx="${i}" data-field="dob" required onchange="recalculate()"></div><div class="form-group"><label>Contact Number *</label><input type="tel" class="traveler-field" data-idx="${i}" data-field="contact" placeholder="+63 9XX XXX XXXX" required></div><div class="form-group"><label>Email Address *</label><input type="email" class="traveler-field" data-idx="${i}" data-field="email" placeholder="email@example.com" required></div></div></div>`;
     }
     list.innerHTML = html;
   }
@@ -964,16 +1007,67 @@ function recalculate() {
   if (!dates) { document.getElementById('installment-preview').style.display = 'none'; document.getElementById('pricing-summary').style.display = 'none'; return; }
   const standardRate = selectedPackage === 'full' ? 180000 : 160000;
   const count = parseInt(document.getElementById('travelersCount').value);
-  const grandTotal = standardRate * count;
+  const primaryDob = document.getElementById('dob').value;
+  // Build full name for primary traveler
+  const pFirst = document.getElementById('firstName') ? document.getElementById('firstName').value : '';
+  const pMiddle = document.getElementById('middleName') ? document.getElementById('middleName').value : '';
+  const pLast = document.getElementById('lastName') ? document.getElementById('lastName').value : '';
+  const pSuffix = document.getElementById('suffix') ? document.getElementById('suffix').value : 'None';
+  const primaryFullName = [pFirst, pMiddle, pLast, pSuffix !== 'None' ? pSuffix : ''].filter(Boolean).join(' ').trim() || 'Primary Traveler';
+
+  // Collect all participants
+  const participants = [{ name: primaryFullName, dob: primaryDob }];
+  for (let i = 2; i <= count; i++) {
+    const dobEl = document.querySelector(`.traveler-field[data-idx="${i}"][data-field="dob"]`);
+    const fnEl = document.querySelector(`.traveler-field[data-idx="${i}"][data-field="firstName"]`);
+    const mnEl = document.querySelector(`.traveler-field[data-idx="${i}"][data-field="middleName"]`);
+    const lnEl = document.querySelector(`.traveler-field[data-idx="${i}"][data-field="lastName"]`);
+    const sfEl = document.querySelector(`.traveler-field[data-idx="${i}"][data-field="suffix"]`);
+    const fn = fnEl ? fnEl.value : '';
+    const mn = mnEl ? mnEl.value : '';
+    const ln = lnEl ? lnEl.value : '';
+    const sf = sfEl && sfEl.value !== 'None' ? sfEl.value : '';
+    const fullName = [fn, mn, ln, sf].filter(Boolean).join(' ').trim() || `Traveler ${i}`;
+    participants.push({ name: fullName, dob: dobEl ? dobEl.value : '' });
+  }
+
+  // Calculate pricing with age-based discounts
+  const classified = participants.map((p, idx) => {
+    const category = classifyAge(p.dob, dates.start, dates.end);
+    const { rate, discount } = getCategoryRate(category, standardRate);
+    return { ...p, index: idx, category, rate, discount, isFree: false, finalRate: rate };
+  });
+
+  const grandTotal = classified.reduce((sum, p) => sum + p.finalRate, 0);
+  const totalDiscount = classified.reduce((sum, p) => sum + p.discount, 0);
+
+  // Render pricing summary
   const summaryEl = document.getElementById('pricing-summary');
-  summaryEl.style.display = 'block';
-  const perHead = standardRate;
-  let html = `<h4>\ud83d\udcb0 Pricing Summary</h4>`;
-  html += `<div class="pricing-row"><span class="label">${selectedPackage === 'full' ? 'Full Package' : 'Land Arrangement Only'}</span><span class="value">${formatPHP(perHead)}</span></div>`;
-  html += `<div class="pricing-row total"><span class="label">Total Cost (${count} traveler${count > 1 ? 's' : ''})</span><span class="value">${formatPHP(grandTotal)}</span></div>`;
-  html += `<div class="discount-note">Infants (0\u201323 months): Flat \u20b150,000. Children (2\u20135): \u20b15,000 off. Seniors (60+): \u20b15,000 off. Discounts applied automatically to the Full Package.</div>`;
-  summaryEl.innerHTML = html;
-  renderInstallmentPreview(grandTotal, travelDateId);
+  if (primaryDob || count > 1) {
+    summaryEl.style.display = 'block';
+    let html = `<h4>\ud83d\udcb0 Pricing Summary</h4>`;
+    classified.forEach(p => {
+      const label = p.name;
+      const catBadge = p.category !== 'adult' ? `<span class="badge">${getCategoryLabel(p.category)}</span>` : '';
+      const originalShow = p.discount > 0 ? `<span class="original">${formatPHP(standardRate)}</span>` : '';
+      const discountShow = p.discount > 0 ? `<span class="discount-text">(-${formatPHP(p.discount)})</span>` : '';
+      html += `<div class="pricing-row"><span class="label">${label} ${catBadge}</span><span class="value">${originalShow}${formatPHP(p.finalRate)}${discountShow}</span></div>`;
+    });
+    html += `<div class="pricing-row total"><span class="label">Total Cost (${count} traveler${count > 1 ? 's' : ''})</span><span class="value">${formatPHP(grandTotal)}</span></div>`;
+    if (totalDiscount > 0) {
+      html += `<div class="savings-banner">\ud83c\udf89 You save ${formatPHP(totalDiscount)} with discounts!${classified.some(p => p.category === 'senior') ? ' (Senior)' : classified.some(p => p.category === 'child') ? ' (Child)' : ''}</div>`;
+    }
+    html += `<div class="discount-note">Infants (0\u201323 months): Flat \u20b150,000. Children (2\u20135): \u20b15,000 off. Seniors (60+): \u20b15,000 off. Discounts applied automatically to the Full Package.</div>`;
+    summaryEl.innerHTML = html;
+  } else {
+    summaryEl.style.display = 'block';
+    let html = `<h4>\ud83d\udcb0 Pricing Summary</h4>`;
+    html += `<div class="pricing-row"><span class="label">${selectedPackage === 'full' ? 'Full Package' : 'Land Arrangement Only'}</span><span class="value">${formatPHP(standardRate)}</span></div>`;
+    html += `<div class="pricing-row total"><span class="label">Total Cost (${count} traveler${count > 1 ? 's' : ''})</span><span class="value">${formatPHP(standardRate * count)}</span></div>`;
+    html += `<div class="discount-note">Infants (0\u201323 months): Flat \u20b150,000. Children (2\u20135): \u20b15,000 off. Seniors (60+): \u20b15,000 off. Discounts applied automatically to the Full Package.</div>`;
+    summaryEl.innerHTML = html;
+  }
+  renderInstallmentPreview(grandTotal || standardRate * count, travelDateId);
 }
 
 function renderInstallmentPreview(total, travelDateId) {
@@ -1057,6 +1151,7 @@ function generateBookingLink() {
     tdl: bd.travelDateLabel,
     sr: bd.standardRate,
     tc: bd.travelConsultant,
+    cl: bd.classified ? bd.classified.map(c => ({ cat: c.category, rate: c.rate, disc: c.discount, free: c.isFree, fr: c.finalRate })) : [],
     cs: bd.compressedSignature || '',
     nt: bd.notes || ''
   };
@@ -1076,8 +1171,19 @@ function checkBookingUrl() {
         firstName: t.f, middleName: t.m, lastName: t.l, suffix: t.s,
         gender: t.g, dob: t.d, contact: t.c, email: t.e
       }));
+      const classified = bp.cl ? bp.cl.map((c, idx) => ({
+        name: [allTravelers[idx].firstName, allTravelers[idx].middleName, allTravelers[idx].lastName].filter(Boolean).join(' '),
+        dob: allTravelers[idx].dob,
+        index: idx,
+        category: c.cat,
+        rate: c.rate,
+        discount: c.disc,
+        isFree: c.free,
+        finalRate: c.fr
+      })) : [];
       lastBookingData = {
         allTravelers,
+        classified,
         grandTotal: bp.gt,
         count: bp.cnt,
         packageType: bp.pkg,
@@ -1141,8 +1247,6 @@ function handleSubmit(e) {
   }
   if (data.notes) message += `\nNOTES: ${data.notes}`;
   const standardRate = selectedPackage === 'full' ? 180000 : 160000;
-  const grandTotal = standardRate * count;
-  const totalAmount = formatPHP(grandTotal);
 
   // Build all travelers array
   const allTravelers = [{ firstName: data.firstName, middleName: data.middleName, lastName: data.lastName, suffix: data.suffix, gender: data.gender, dob: data.dob, contact: data.contactNo, email: data.email }];
@@ -1159,7 +1263,18 @@ function handleSubmit(e) {
   }
   for (let i = 7; i <= count; i++) { allTravelers.push({ firstName: `Traveler ${i}`, middleName: '', lastName: '(Details pending)', suffix: 'None', gender: '\u2014', dob: '', contact: '\u2014', email: '\u2014' }); }
 
-  lastBookingData = { allTravelers, grandTotal, count, packageType: selectedPackage, paymentScheme: selectedPayment, travelDateId: data.travelDate, travelDateLabel, standardRate, travelConsultant: data.travelConsultant, notes: data.notes || '' };
+  // Classify travelers by age for discount pricing
+  const dates = TRAVEL_DATES[data.travelDate];
+  const classified = allTravelers.map((t, idx) => {
+    const name = [t.firstName, t.middleName, t.lastName].filter(Boolean).join(' ').trim();
+    const category = classifyAge(t.dob, dates.start, dates.end);
+    const { rate, discount } = getCategoryRate(category, standardRate);
+    return { name, dob: t.dob, index: idx, category, rate, discount, isFree: false, finalRate: rate };
+  });
+  const grandTotal = classified.reduce((sum, p) => sum + p.finalRate, 0);
+  const totalAmount = formatPHP(grandTotal);
+
+  lastBookingData = { allTravelers, classified, grandTotal, count, packageType: selectedPackage, paymentScheme: selectedPayment, travelDateId: data.travelDate, travelDateLabel, standardRate, travelConsultant: data.travelConsultant, notes: data.notes || '' };
 
   const btn = document.getElementById('submit-btn');
   btn.disabled = true; btn.textContent = 'Submitting...';
@@ -1226,7 +1341,17 @@ function showSuccessMessage() {
     travelerRows += `<tr><td style="font-weight:700;">${idx + 1}</td><td class="font-bold">${t.firstName}</td><td>${t.middleName || '\u2014'}</td><td class="font-bold">${t.lastName}</td><td>${t.suffix && t.suffix !== 'None' ? t.suffix : '\u2014'}</td><td>${t.gender}</td><td class="mono">${t.contact || '\u2014'}</td><td class="mono">${t.email || '\u2014'}</td><td class="mono">${t.dob ? new Date(t.dob + 'T00:00:00').toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'}) : '\u2014'}</td></tr>`;
   });
 
-  let pricingRows = `<tr><td>${bd.packageType === 'full' ? 'Full Package' : 'Land Arrangement'}</td><td class="text-right">${formatPHP(bd.standardRate)}</td><td class="text-center">${bd.count}</td><td class="text-right font-bold">${formatPHP(bd.grandTotal)}</td></tr>`;
+  let pricingRows = '';
+  let totalDiscount = 0;
+  if (bd.classified && bd.classified.length > 0) {
+    bd.classified.forEach((p, idx) => {
+      const catLabel = p.category !== 'adult' ? ` (${getCategoryLabel(p.category)})` : '';
+      pricingRows += `<tr><td>${bd.allTravelers[idx].firstName} ${bd.allTravelers[idx].lastName}${catLabel}</td><td class="text-right">${formatPHP(p.rate)}</td><td class="text-center">1</td><td class="text-right font-bold">${formatPHP(p.finalRate)}</td></tr>`;
+      totalDiscount += p.discount;
+    });
+  } else {
+    pricingRows += `<tr><td>${bd.packageType === 'full' ? 'Full Package' : 'Land Arrangement'}</td><td class="text-right">${formatPHP(bd.standardRate)}</td><td class="text-center">${bd.count}</td><td class="text-right font-bold">${formatPHP(bd.grandTotal)}</td></tr>`;
+  }
   pricingRows += `<tr class="total-row"><td style="font-weight:900;">GRAND TOTAL</td><td></td><td class="text-center font-bold">${bd.count} pax</td><td class="text-right" style="font-size:1rem;">${formatPHP(bd.grandTotal)}</td></tr>`;
 
   // Payment schedule
@@ -1626,9 +1751,20 @@ function saveEdits() {
   // Update notes
   const notesEl = document.getElementById('edit-notes');
   bd.notes = notesEl ? notesEl.value : bd.notes;
-  // Recalculate totals
+  // Recalculate totals with age-based discounts
   bd.standardRate = bd.packageType === 'full' ? 180000 : 160000;
-  bd.grandTotal = bd.standardRate * bd.count;
+  const dates = TRAVEL_DATES[bd.travelDateId];
+  if (dates && bd.allTravelers) {
+    bd.classified = bd.allTravelers.map((t, idx) => {
+      const name = [t.firstName, t.middleName, t.lastName].filter(Boolean).join(' ').trim();
+      const category = classifyAge(t.dob, dates.start, dates.end);
+      const { rate, discount } = getCategoryRate(category, bd.standardRate);
+      return { name, dob: t.dob, index: idx, category, rate, discount, isFree: false, finalRate: rate };
+    });
+    bd.grandTotal = bd.classified.reduce((sum, p) => sum + p.finalRate, 0);
+  } else {
+    bd.grandTotal = bd.standardRate * bd.count;
+  }
   // Re-render the booking confirmation
   isEditMode = false;
   showSuccessMessage();
