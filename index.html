@@ -11,13 +11,13 @@
 /* ==================== CSS RESET & VARIABLES ==================== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --primary: #0a1e5e;
-  --primary-dark: #061442;
-  --primary-light: #1a3a8b;
+  --primary: #003e8f;
+  --primary-dark: #002576;
+  --primary-light: #0057a9;
   --accent: #D4AF37;
   --accent-dark: #b8962e;
   --accent-light: #e8c84a;
-  --bg: #0a1e5e;
+  --bg: #003e8f;
   --surface: #ffffff;
   --text: #1a1a2e;
   --text-light: #ffffff;
@@ -188,7 +188,7 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
 
 /* ==================== GROUP TRIP BANNER ==================== */
 .group-trip-banner { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem 0; background: var(--primary); }
-.group-trip-box { background: linear-gradient(135deg, #1a3a8b, #2a4faa); border: 1px solid rgba(255,255,255,0.15); border-radius: 1rem; padding: 2.5rem 2rem; text-align: center; }
+.group-trip-box { background: linear-gradient(135deg, #003e8f, #0057a9); border: 1px solid rgba(255,255,255,0.15); border-radius: 1rem; padding: 2.5rem 2rem; text-align: center; }
 .group-trip-box h3 { font-size: 1.4rem; font-weight: 700; color: white; margin-bottom: 0.75rem; font-family: 'Playfair Display', serif; }
 .group-trip-box p { font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-bottom: 1.25rem; line-height: 1.6; }
 .group-trip-box .btn { display: inline-block; padding: 0.75rem 2rem; }
@@ -316,51 +316,51 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
 
 /* ==================== BOOKING CONFIRMATION ==================== */
 .booking-confirmation { max-width: 850px; margin: 0 auto; background: #fff; border-radius: 0; box-shadow: 0 8px 40px rgba(0,0,0,0.2); font-family: 'Inter', sans-serif; color: #1a1f3a; }
-.bc-header { background: linear-gradient(135deg, #0a1e5e, #1a3a8b); color: white; padding: 1.5rem 2rem 1.25rem; }
+.bc-header { background: linear-gradient(135deg, #002576, #003e8f); color: white; padding: 1.5rem 2rem 1.25rem; }
 .bc-header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
 .bc-header-left { display: flex; align-items: center; gap: 0.75rem; }
 .bc-header-left img { height: 48px; width: 48px; border-radius: 8px; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); }
 .bc-header-left h2 { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin: 0; font-family: 'Inter', sans-serif; }
 .bc-header-left .sub { font-size: 0.7rem; color: rgba(255,255,255,0.7); margin-top: 2px; }
 .bc-header-right { text-align: right; }
-.bc-badge { display: inline-block; background: #D4AF37; color: #0a1e5e; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; padding: 0.3rem 0.75rem; border-radius: 3px; }
+.bc-badge { display: inline-block; background: #D4AF37; color: #003e8f; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; padding: 0.3rem 0.75rem; border-radius: 3px; }
 .bc-header-right .date { font-size: 0.65rem; color: rgba(255,255,255,0.6); margin-top: 0.4rem; }
 .bc-header-contact { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.15); font-size: 0.7rem; color: rgba(255,255,255,0.7); }
 .bc-body { padding: 2rem; }
-.bc-section-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #0a1e5e; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; font-family: 'Inter', sans-serif; }
-.bc-section-title::before { content: ''; width: 4px; height: 20px; background: #0a1e5e; border-radius: 2px; }
+.bc-section-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #003e8f; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; font-family: 'Inter', sans-serif; }
+.bc-section-title::before { content: ''; width: 4px; height: 20px; background: #003e8f; border-radius: 2px; }
 .bc-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 2rem; background: #f8fafc; border-radius: 0.75rem; padding: 1.25rem 1.5rem; border: 1px solid #e8edf5; margin-bottom: 2rem; }
 .bc-detail-item label { display: block; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7a94; margin-bottom: 0.2rem; }
 .bc-detail-item p { font-size: 0.85rem; font-weight: 700; color: #1a1f3a; margin: 0; }
-.bc-detail-item p.highlight { color: #0a1e5e; }
+.bc-detail-item p.highlight { color: #003e8f; }
 @media(max-width:640px) { .bc-details-grid { grid-template-columns: 1fr; } }
 .bc-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-bottom: 2rem; border: 1px solid #e8edf5; border-radius: 0.5rem; overflow: hidden; }
-.bc-table thead tr { background: rgba(10,30,94,0.05); }
-.bc-table th { padding: 0.6rem 0.75rem; text-align: left; font-weight: 700; color: #0a1e5e; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e8edf5; }
+.bc-table thead tr { background: rgba(0,62,143,0.05); }
+.bc-table th { padding: 0.6rem 0.75rem; text-align: left; font-weight: 700; color: #003e8f; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e8edf5; }
 .bc-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #f1f5f9; color: #374151; }
 .bc-table tbody tr:last-child td { border-bottom: none; }
 .bc-table .font-bold { font-weight: 700; }
 .bc-table .mono { font-family: 'Inter', monospace; color: #6b7a94; }
 .bc-table .text-right { text-align: right; }
 .bc-table .text-center { text-align: center; }
-.bc-table .total-row { background: rgba(10,30,94,0.05); font-weight: 800; color: #0a1e5e; }
+.bc-table .total-row { background: rgba(0,62,143,0.05); font-weight: 800; color: #003e8f; }
 .bc-breakdown { margin-bottom: 2rem; }
 .bc-breakdown ul { list-style: disc; padding-left: 1.25rem; }
 .bc-breakdown li { font-size: 0.8rem; padding: 0.25rem 0; color: #374151; }
 .bc-breakdown li .name { font-weight: 700; text-transform: uppercase; }
-.bc-breakdown li .cat { font-size: 0.7rem; color: #0a1e5e; font-weight: 600; margin-left: 0.25rem; }
+.bc-breakdown li .cat { font-size: 0.7rem; color: #003e8f; font-weight: 600; margin-left: 0.25rem; }
 .bc-breakdown li .free { color: #16a34a; font-weight: 700; }
 .bc-breakdown li .disc { color: #16a34a; font-size: 0.7rem; margin-left: 0.5rem; }
 .bc-breakdown .savings { margin-top: 0.75rem; font-size: 0.85rem; font-weight: 700; color: #16a34a; }
 .bc-pricing-section { margin-bottom: 2rem; }
 .bc-pricing-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; border: 1px solid #e8edf5; border-radius: 0.5rem; overflow: hidden; }
-.bc-pricing-table thead tr { background: rgba(10,30,94,0.05); }
-.bc-pricing-table th { padding: 0.6rem 1rem; font-weight: 700; color: #0a1e5e; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e8edf5; }
+.bc-pricing-table thead tr { background: rgba(0,62,143,0.05); }
+.bc-pricing-table th { padding: 0.6rem 1rem; font-weight: 700; color: #003e8f; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e8edf5; }
 .bc-pricing-table td { padding: 0.6rem 1rem; border-bottom: 1px solid #f1f5f9; }
 .bc-pricing-table .text-right { text-align: right; }
 .bc-pricing-table .text-center { text-align: center; }
-.bc-pricing-table .total-row { background: rgba(10,30,94,0.05); border-top: 1px solid #e8edf5; }
-.bc-pricing-table .total-row td { font-weight: 900; color: #0a1e5e; }
+.bc-pricing-table .total-row { background: rgba(0,62,143,0.05); border-top: 1px solid #e8edf5; }
+.bc-pricing-table .total-row td { font-weight: 900; color: #003e8f; }
 .bc-pricing-table .discount-row td { color: #16a34a; }
 .bc-vat-note { font-size: 0.7rem; color: #6b7a94; font-style: italic; margin-top: 0.5rem; }
 .bc-benefits { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 2rem; }
@@ -380,21 +380,21 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
 .bc-inclusions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
 @media(max-width:640px) { .bc-inclusions-grid { grid-template-columns: 1fr; } }
 .bc-inclusions-grid .item { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.75rem; color: #374151; padding: 0.3rem 0; }
-.bc-inclusions-grid .item .check { color: #0a1e5e; flex-shrink: 0; }
+.bc-inclusions-grid .item .check { color: #003e8f; flex-shrink: 0; }
 .bc-exclusions { margin-bottom: 2rem; }
 .bc-exclusions p { font-size: 0.75rem; color: #374151; padding: 0.2rem 0; }
 .bc-payment-schedule { margin-bottom: 2rem; }
 .bc-separator { height: 1px; background: #e8edf5; margin: 2rem 0; }
 .bc-footer { text-align: center; padding: 1.5rem 2rem; background: #f8fafc; border-top: 1px solid #e8edf5; }
 .bc-footer p { font-size: 0.75rem; color: #6b7a94; margin: 0.25rem 0; }
-.bc-footer .company { font-weight: 700; color: #0a1e5e; font-size: 0.85rem; }
+.bc-footer .company { font-weight: 700; color: #003e8f; font-size: 0.85rem; }
 .bc-actions { display: flex; gap: 0.75rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap; }
 .bc-actions button { padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 700; cursor: pointer; border: none; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem; }
 .bc-actions button:active { transform: scale(0.97); }
-.bc-actions .btn-print { background: #0a1e5e; color: white; }
-.bc-actions .btn-print:hover { background: #1a3a8b; }
-.bc-actions .btn-new { background: transparent; color: #0a1e5e; border: 2px solid #0a1e5e; }
-.bc-actions .btn-new:hover { background: rgba(10,30,94,0.05); }
+.bc-actions .btn-print { background: #003e8f; color: white; }
+.bc-actions .btn-print:hover { background: #003e8f; }
+.bc-actions .btn-new { background: transparent; color: #003e8f; border: 2px solid #003e8f; }
+.bc-actions .btn-new:hover { background: rgba(0,62,143,0.05); }
 .bc-vat-note { font-size: 0.7rem; color: #6b7a94; font-style: italic; margin-top: 0.5rem; }
 
 /* Terms & Conditions */
@@ -410,8 +410,8 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
 .bc-agreement { margin: 1.5rem 0; padding: 1.25rem; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 0.75rem; transition: border-color 0.2s; }
 .bc-agreement.checked { border-color: #16a34a; background: #f0fdf4; }
 .bc-agreement label { display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer; font-size: 0.8rem; color: #1a1f3a; line-height: 1.5; }
-.bc-agreement input[type="checkbox"] { margin-top: 3px; width: 18px; height: 18px; accent-color: #0a1e5e; flex-shrink: 0; cursor: pointer; }
-.bc-agreement .tc-link { display: inline-flex; align-items: center; gap: 0.3rem; margin-left: 1.75rem; margin-top: 0.5rem; font-size: 0.7rem; color: #0a1e5e; font-weight: 700; text-decoration: underline; }
+.bc-agreement input[type="checkbox"] { margin-top: 3px; width: 18px; height: 18px; accent-color: #003e8f; flex-shrink: 0; cursor: pointer; }
+.bc-agreement .tc-link { display: inline-flex; align-items: center; gap: 0.3rem; margin-left: 1.75rem; margin-top: 0.5rem; font-size: 0.7rem; color: #003e8f; font-weight: 700; text-decoration: underline; }
 
 /* Signature Section */
 .bc-signature-section { margin-bottom: 2rem; }
@@ -435,8 +435,8 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
 
 /* Confirmation Submit Button */
 .bc-submit-section { text-align: center; margin: 1.5rem 0; }
-.bc-submit-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.85rem 2rem; background: #0a1e5e; color: white; border: none; border-radius: 0.5rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(10,30,94,0.3); }
-.bc-submit-btn:hover { background: #1a3a8b; transform: translateY(-1px); }
+.bc-submit-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.85rem 2rem; background: #003e8f; color: white; border: none; border-radius: 0.5rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,62,143,0.3); }
+.bc-submit-btn:hover { background: #003e8f; transform: translateY(-1px); }
 .bc-submit-btn:active { transform: scale(0.97); }
 .bc-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 .bc-submit-status { font-size: 0.75rem; margin-top: 0.75rem; }
