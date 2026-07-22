@@ -1289,7 +1289,7 @@ function generateBookingLink() {
     nt: bd.notes || ''
   };
   const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(bookingPayload))));
-  return `https://discovergrp.github.io/route-d-easy/?booking=${encoded}`;
+  return `https://discovergrp.github.io/routedeasy/?booking=${encoded}`;
 }
 
 // Check URL for booking parameter on page load (agent clicking from email)
