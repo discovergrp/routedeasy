@@ -1703,10 +1703,10 @@ function showSuccessMessage() {
         <div style="margin-bottom:1.5rem;">
           <h4 style="font-size:0.85rem;font-weight:800;color:#16a34a;margin-bottom:0.5rem;border-bottom:2px solid #a7f3d0;padding-bottom:0.3rem;">\u2713 Package Inclusions</h4>
           <ul style="font-size:0.75rem;color:#374151;padding-left:1.2rem;margin:0;line-height:1.8;">
-            <li>Round-trip airfare (Manila\u2013London, Dublin\u2013Manila)</li>
-            <li>Round-trip airport transfers</li>
+            ${bd.packageType !== 'land' ? '<li>Round-trip airfare (Manila\u2013London, Dublin\u2013Manila)</li>' : ''}
+            ${bd.packageType !== 'land' ? '<li>Round-trip airport transfers</li>' : ''}
             <li>Airport terminal fee</li>
-            <li>1pc 20kg check-in luggage + 1pc personal bag</li>
+            ${bd.packageType !== 'land' ? '<li>1pc 20kg check-in luggage + 1pc personal bag</li>' : ''}
             <li>11 nights hotel accommodation (3-star)</li>
             <li>Visit England, Scotland & Ireland</li>
             <li>Coach transfers all throughout the tour</li>
@@ -2355,15 +2355,16 @@ function openDetailPopup(type) {
   let title = '', headerClass = '', items = [];
   if (type === 'inclusions') {
     title = 'Package Inclusions'; headerClass = 'green';
+    const isLand = lastBookingData && lastBookingData.packageType === 'land';
     items = [
-      { icon: '\u2713', cls: 'green', text: 'Round trip airfare (Manila \u2013 London and Dublin \u2013 Manila)' },
+      ...(!isLand ? [{ icon: '\u2713', cls: 'green', text: 'Round trip airfare (Manila \u2013 London and Dublin \u2013 Manila)' }] : []),
       { icon: '\u2713', cls: 'green', text: '11 nights hotel accommodation in England, Scotland, and Ireland' },
-      { icon: '\u2713', cls: 'green', text: 'Airport transfers all throughout the tour' },
+      ...(!isLand ? [{ icon: '\u2713', cls: 'green', text: 'Airport transfers all throughout the tour' }] : []),
       { icon: '\u2713', cls: 'green', text: 'Complimentary daily breakfast' },
       { icon: '\u2713', cls: 'green', text: 'Visit England, Scotland, and Ireland (as stated in the itinerary)' },
       { icon: '\u2713', cls: 'green', text: 'Coach transfers all throughout the tour' },
       { icon: '\u2713', cls: 'green', text: 'Airport terminal fee' },
-      { icon: '\u2713', cls: 'green', text: '1pc 20kg check-in luggage + 1pc personal bag' }
+      ...(!isLand ? [{ icon: '\u2713', cls: 'green', text: '1pc 20kg check-in luggage + 1pc personal bag' }] : [])
     ];
   } else if (type === 'exclusions') {
     title = 'Package Exclusions'; headerClass = 'red';
