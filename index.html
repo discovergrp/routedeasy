@@ -826,7 +826,7 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
           <div class="toggle-option" data-value="land" onclick="selectPackage('land')">
             <div class="toggle-title">Land Arrangement Only</div>
             <div class="toggle-sub">No Airfare & Airport Transfer</div>
-            <div class="toggle-price">₱160,000</div>
+            <div class="toggle-price">₱150,000</div>
           </div>
         </div>
       </div>
@@ -1113,7 +1113,7 @@ function recalculate() {
   const travelDateId = document.getElementById('travelDate').value;
   const dates = TRAVEL_DATES[travelDateId];
   if (!dates) { document.getElementById('installment-preview').style.display = 'none'; return; }
-  const standardRate = selectedPackage === 'full' ? 180000 : 160000;
+  const standardRate = selectedPackage === 'full' ? 180000 : 150000;
   const count = parseInt(document.getElementById('travelersCount').value);
   const primaryDob = document.getElementById('dob').value;
   // Build full name for primary traveler
@@ -1380,7 +1380,7 @@ function handleSubmit(e) {
     }
   }
   if (data.notes) message += `\nNOTES: ${data.notes}`;
-  const standardRate = selectedPackage === 'full' ? 180000 : 160000;
+  const standardRate = selectedPackage === 'full' ? 180000 : 150000;
 
   // Build all travelers array
   const allTravelers = [{ firstName: data.firstName, middleName: data.middleName, lastName: data.lastName, suffix: data.suffix, gender: data.gender, dob: data.dob, contact: data.contactNo, email: data.email }];
@@ -1432,7 +1432,7 @@ function handleSubmit(e) {
     email: data.email,
     contact_number: data.contactNo,
     travel_date: travelDateLabel,
-    package_type: selectedPackage === 'full' ? 'Full Package (\u20b1180,000)' : 'Land Arrangement Only (\u20b1160,000)',
+    package_type: selectedPackage === 'full' ? 'Full Package (\u20b1180,000)' : 'Land Arrangement Only (\u20b1150,000)',
     payment_scheme: selectedPayment === 'installment' ? 'Monthly Installment' : selectedPayment === 'downpayment' ? '\u20b150K Down Payment' : 'Full Cash',
     travelers_count: count + ' person(s)',
     total_amount: totalAmount,
@@ -1577,7 +1577,7 @@ function showSuccessMessage() {
 
   // Package type label
   const pkgLabel = bd.packageType === 'full' ? 'Full Package (With Airfare)' : 'Land Arrangement Only';
-  const pkgRate = bd.packageType === 'full' ? '\u20b1180,000' : '\u20b1160,000';
+  const pkgRate = bd.packageType === 'full' ? '\u20b1180,000' : '\u20b1150,000';
   const payLabel = bd.paymentScheme === 'installment' ? 'Monthly Installment' : bd.paymentScheme === 'downpayment' ? '\u20b150K Down Payment' : 'Full Cash';
 
   // Hide the entire page and show confirmation
@@ -2164,7 +2164,7 @@ function saveEdits() {
   const notesEl = document.getElementById('edit-notes');
   bd.notes = notesEl ? notesEl.value : bd.notes;
   // Recalculate totals with age-based discounts
-  bd.standardRate = bd.packageType === 'full' ? 180000 : 160000;
+  bd.standardRate = bd.packageType === 'full' ? 180000 : 150000;
   const dates = TRAVEL_DATES[bd.travelDateId];
   if (dates && bd.allTravelers) {
     bd.classified = bd.allTravelers.map((t, idx) => {
@@ -2298,7 +2298,7 @@ async function submitSignedConfirmation() {
   // Add booking summary
   const travelerList = bd.allTravelers.map((t, i) => `${i+1}. ${t.firstName} ${t.middleName || ''} ${t.lastName}${t.suffix && t.suffix !== 'None' ? ' ' + t.suffix : ''} (${t.gender}, DOB: ${t.dob}, Contact: ${t.contact}, Email: ${t.email})`).join('\n');
   formData.append('Travel_Date', bd.travelDateLabel || bd.travelDateId);
-  formData.append('Package_Type', bd.packageType === 'full' ? 'Full Package (\u20b1180,000)' : 'Land Arrangement Only (\u20b1160,000)');
+  formData.append('Package_Type', bd.packageType === 'full' ? 'Full Package (\u20b1180,000)' : 'Land Arrangement Only (\u20b1150,000)');
   formData.append('Payment_Scheme', bd.paymentScheme === 'installment' ? 'Monthly Installment' : bd.paymentScheme === 'downpayment' ? '\u20b150K Down Payment' : 'Full Cash');
   formData.append('Total_Passengers', String(bd.count));
   formData.append('Grand_Total', formatPHP(bd.grandTotal));
