@@ -361,8 +361,7 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
 .bc-pricing-table .text-center { text-align: center; }
 .bc-pricing-table .total-row { background: rgba(0,62,143,0.05); border-top: 1px solid #e8edf5; }
 .bc-pricing-table .total-row td { font-weight: 900; color: #003e8f; }
-.bc-pricing-table .discount-row { display: table-row; padding: 0; }
-.bc-pricing-table .discount-row td { color: #16a34a; }
+.bc-pricing-table .bc-discount-row td { color: #16a34a; }
 .bc-pricing-table .font-bold { font-weight: 700; }
 .bc-vat-note { font-size: 0.7rem; color: #6b7a94; font-style: italic; margin-top: 0.5rem; }
 .bc-benefits { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 2rem; }
@@ -1502,7 +1501,7 @@ function showSuccessMessage() {
   if (bd.classified && bd.classified.length > 0) {
     bd.classified.forEach((p, idx) => {
       const catLabel = p.category !== 'adult' ? ` (${getCategoryLabel(p.category)})` : '';
-      pricingRows += `<tr${p.discount > 0 ? ' class="discount-row"' : ''}><td>${bd.allTravelers[idx].firstName} ${bd.allTravelers[idx].lastName}${catLabel}</td><td class="text-right">${formatPHP(p.rate)}</td><td class="text-center">1</td><td class="text-right font-bold">${formatPHP(p.finalRate)}</td></tr>`;
+      pricingRows += `<tr${p.discount > 0 ? ' class="bc-discount-row"' : ''}><td>${bd.allTravelers[idx].firstName} ${bd.allTravelers[idx].lastName}${catLabel}</td><td class="text-right">${formatPHP(p.rate)}</td><td class="text-center">1</td><td class="text-right font-bold">${formatPHP(p.finalRate)}</td></tr>`;
       totalDiscount += p.discount;
     });
   } else {
