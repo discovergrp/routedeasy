@@ -1501,12 +1501,7 @@ function showSuccessMessage() {
   if (bd.classified && bd.classified.length > 0) {
     bd.classified.forEach((p, idx) => {
       const catLabel = p.category !== 'adult' ? ` (${getCategoryLabel(p.category)})` : '';
-      pricingRows += `<tr${p.discount > 0 ? ' class="discount-row"' : ''}>
-        <td>${bd.allTravelers[idx].firstName} ${bd.allTravelers[idx].lastName}${catLabel}</td>
-        <td class="text-right">${formatPHP(p.rate)}</td>
-        <td class="text-center">1</td>
-        <td class="text-right font-bold">${formatPHP(p.finalRate)}</td>
-      </tr>`;
+      pricingRows += `<tr${p.discount > 0 ? ' class="discount-row"' : ''}><td>${bd.allTravelers[idx].firstName} ${bd.allTravelers[idx].lastName}${catLabel}</td><td class="text-right">${formatPHP(p.rate)}</td><td class="text-center">1</td><td class="text-right font-bold">${formatPHP(p.finalRate)}</td></tr>`;
       totalDiscount += p.discount;
     });
   } else {
